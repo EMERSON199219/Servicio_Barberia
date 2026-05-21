@@ -182,7 +182,29 @@ timeSlots.forEach((button) => {
   });
 });
 
-form.addEventListener("submit", (event) => {
+async function sendReservationNotification(appointment) {
+  try {
+    const response = await fetch("/.netlify/functions/sendReservationEmail", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(appointment),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || "Error al enviar notificación");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Notificación de reserva falló:", error);
+    return null;
+  }
+}
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const appointmentDate = dateInput.value;
@@ -196,7 +218,7 @@ form.addEventListener("submit", (event) => {
     createdAt: new Date().toISOString(),
   };
 
-  if (!appointment.name || !appointment.phone || !appointment.service || !appointment.barber || !appointment.time) {
+  if (!appointment.name || !appointment.phone || !appointment.service || !appointment.barber || !appointment.time || !appointment.date) {
     confirmation.textContent = "Por favor completa todos los campos obligatorios y selecciona una hora.";
     confirmation.style.color = "#f29a4c";
     return;
@@ -206,7 +228,13 @@ form.addEventListener("submit", (event) => {
   savedAppointments.push(appointment);
   localStorage.setItem("appointments", JSON.stringify(savedAppointments));
 
-  confirmation.textContent = `¡Reserva enviada! Hemos guardado tu cita para el ${appointment.date} a las ${appointment.time}.`;
+  const notifyResult = await sendReservationNotification(appointment);
+  if (notifyResult) {
+    confirmation.textContent = `¡Reserva enviada! Hemos guardado tu cita para el ${appointment.date} a las ${appointment.time} y se envió la notificación.`;
+  } else {
+    confirmation.textContent = `¡Reserva enviada! Hemos guardado tu cita para el ${appointment.date} a las ${appointment.time}. No se pudo enviar la notificación.`;
+  }
+
   confirmation.style.color = "#bada55";
   form.reset();
   clearTimeSelection();
