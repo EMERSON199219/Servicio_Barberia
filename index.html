@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reserva Barbería</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand admin-trigger" tabindex="0" title="Acceso oculto de administrador">
+        <h1>Barbería Corte Fino</h1>
+        <p>Reserva tu cita y luce espectacular</p>
+      </div>
+      <nav class="nav-menu">
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#reserva">Reserva</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="inicio" class="hero-section">
+      <div class="container hero-content">
+        <div>
+          <h2>La mejor experiencia de barbería en tu ciudad</h2>
+          <p>Elige tu servicio, reserva tu hora y prepárate para un corte impecable.</p>
+          <a class="btn primary-btn" href="#reserva">Reserva ahora</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="servicios" class="section servicios-section">
+      <div class="container">
+        <h2>Servicios</h2>
+        <div class="cards-grid">
+          <article class="card">
+            <h3>Corte de cabello</h3>
+            <p>Estilo clásico, moderno o personalizado según tu gusto.</p>
+          </article>
+          <article class="card">
+            <h3>Afeitado y arreglo de barba</h3>
+            <p>Perfilado preciso, diseño de barba y toques finales.</p>
+          </article>
+          <article class="card">
+            <h3>Combo completo</h3>
+            <p>Corte + barba + estilo para un arreglo completo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="reserva" class="section reserva-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Reserva tu cita</h2>
+          <p>Completa los datos, elige tu barbero y confirma tu hora de forma rápida.</p>
+        </div>
+        <div class="reservation-card">
+          <form id="reservationForm" class="reservation-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Nombre</label>
+                <input type="text" id="name" name="name" placeholder="Tu nombre" required />
+              </div>
+              <div class="form-group">
+                <label for="phone">WhatsApp</label>
+                <input type="tel" id="phone" name="phone" placeholder="3000000000" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="service">Servicio</label>
+                <select id="service" name="service" required>
+                  <option value="">Selecciona un servicio</option>
+                  <option>Corte de cabello</option>
+                  <option>Afeitado y arreglo de barba</option>
+                  <option>Combo completo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="barber">Barbero</label>
+                <select id="barber" name="barber" required>
+                  <option value="">Elige un barbero</option>
+                  <option>Mateo</option>
+                  <option>Carlos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="date-section">
+              <label for="date">Fecha de la cita</label>
+              <input type="date" id="date" name="date" required />
+            </div>
+
+            <div class="time-slots" id="timeSlots">
+              <button type="button" class="slot-button" data-time="08:00">08:00 AM</button>
+              <button type="button" class="slot-button" data-time="09:00">09:00 AM</button>
+              <button type="button" class="slot-button" data-time="10:00">10:00 AM</button>
+              <button type="button" class="slot-button" data-time="11:00">11:00 AM</button>
+              <button type="button" class="slot-button" data-time="12:00">12:00 PM</button>
+              <button type="button" class="slot-button" data-time="14:00">02:00 PM</button>
+              <button type="button" class="slot-button" data-time="15:00">03:00 PM</button>
+              <button type="button" class="slot-button" data-time="16:00">04:00 PM</button>
+              <button type="button" class="slot-button" data-time="17:00">05:00 PM</button>
+              <button type="button" class="slot-button" data-time="18:00">06:00 PM</button>
+            </div>
+
+            <input type="hidden" id="timeInput" name="time" />
+
+            <button type="submit" class="btn primary-btn confirm-btn">Confirmar reserva</button>
+            <p id="confirmation" class="confirmation"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin" class="section admin-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Administración</h2>
+          <p>Accede con usuario y contraseña para ver las reservas.</p>
+        </div>
+        <div class="admin-card">
+          <form id="adminLoginForm" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="adminUsername">Usuario</label>
+                <input type="text" id="adminUsername" name="adminUsername" placeholder="admin" required />
+              </div>
+              <div class="form-group">
+                <label for="adminPassword">Contraseña</label>
+                <input type="password" id="adminPassword" name="adminPassword" placeholder="********" required />
+              </div>
+            </div>
+            <button type="submit" class="btn primary-btn">Ingresar</button>
+            <p id="adminMessage" class="confirmation"></p>
+          </form>
+
+          <div id="adminContent" class="admin-content hidden">
+            <div class="section-header">
+              <h3>Reservas registradas</h3>
+              <p>Estas son las citas que se han reservado en el sistema.</p>
+            </div>
+            <div id="adminReservations" class="reservations-container"></div>
+            <div class="admin-actions">
+              <button id="clearReservations" class="btn secondary-btn">Borrar todas las reservas</button>
+              <button id="logoutAdmin" class="btn secondary-btn">Cerrar sesión</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 Barbería Corte Fino. Reserva de citas estática.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
