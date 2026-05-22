@@ -470,9 +470,34 @@ img {
     grid-template-columns: 1fr;
   }
 
-  .date-selectors,
-  .time-slots {
+  .date-selectors {
     grid-template-columns: 1fr;
+  }
+
+  .time-slots {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.8rem;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+
+  .time-slots::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .time-slots::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+  }
+
+  .time-slots .slot-button {
+    flex: 0 0 auto;
+    min-width: 85px;
+    padding: 0.85rem 1rem;
   }
 
   .header-inner {
