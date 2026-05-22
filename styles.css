@@ -181,17 +181,12 @@ img {
 }
 
 .section {
-   padding: 3rem 0;
- }
- 
- .servicios-section {
-   padding-top: 2rem;
-   padding-bottom: 2.5rem;
+   padding: 2rem 0;
  }
  
  .section-header {
    max-width: 34rem;
-   margin-bottom: 1.25rem;
+   margin-bottom: 1rem;
  }
  
  .section h2 {
@@ -223,8 +218,8 @@ img {
 .reservation-card {
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
-  border-radius: 2rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
