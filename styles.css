@@ -106,6 +106,34 @@ img {
   }
 }
 
+/* Mobile: show time slots in a single horizontal row with scroll */
+@media (max-width: 600px) {
+  .time-slots {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .time-slots::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .time-slots::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+  }
+
+  .time-slots .slot-button {
+    flex: 0 0 auto;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    min-width: 72px;
+  }
+}
+
 .nav-menu {
   display: flex;
   gap: 1rem;
