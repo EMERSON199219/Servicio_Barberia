@@ -41,6 +41,57 @@ function parseDateStringToLocalDate(dateString) {
   return new Date(year, month - 1, day);
 }
 
+function getTodayString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function cleanupOldAppointments() {
+  const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  const today = getTodayString();
+  const filteredAppointments = appointments.filter((appointment) => appointment.date >= today);
+
+  if (filteredAppointments.length !== appointments.length) {
+    localStorage.setItem("appointments", JSON.stringify(filteredAppointments));
+  }
+
+  return filteredAppointments;
+}
+
+function updateAppointmentStatuses(appointments = null) {
+  const savedAppointments = appointments || JSON.parse(localStorage.getItem("appointments")) || [];
+  const today = getTodayString();
+  const now = new Date();
+  let changed = false;
+
+  const updatedAppointments = savedAppointments.map((appointment) => {
+    let status = appointment.status || "pendiente";
+
+    if (appointment.date === today) {
+      const [hour, minute] = appointment.time.split(":").map(Number);
+      const slotDate = new Date(appointment.date);
+      slotDate.setHours(hour, minute, 0, 0);
+
+      const newStatus = slotDate <= now ? "hecha" : "pendiente";
+      if (newStatus !== status) {
+        status = newStatus;
+        changed = true;
+      }
+    }
+
+    return { ...appointment, status };
+  });
+
+  if (changed) {
+    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+  }
+
+  return updatedAppointments;
+}
+
 function isPastSlot(date, time) {
   if (!date || !time) {
     return false;
@@ -83,8 +134,13 @@ function updateTimeSlotState() {
   });
 }
 
+function getStatusLabel(status) {
+  return status === "hecha" ? "Hecha" : "Pendiente";
+}
+
 function renderAdminReservations() {
-  const savedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  const cleanedAppointments = cleanupOldAppointments();
+  const savedAppointments = updateAppointmentStatuses(cleanedAppointments);
 
   if (!adminReservations) {
     return;
@@ -97,7 +153,7 @@ function renderAdminReservations() {
 
   adminReservations.innerHTML = savedAppointments
     .map(
-      (appointment) => `
+      (appointment, index) => `
       <article class="reservation-item">
         <div class="reservation-item-head">
           <strong>${appointment.name}</strong>
@@ -105,10 +161,26 @@ function renderAdminReservations() {
         </div>
         <p>${appointment.service} · ${appointment.barber}</p>
         <p>${appointment.phone}</p>
+        <p class="reservation-status">Estado: <strong>${getStatusLabel(appointment.status)}</strong></p>
+        <button type="button" class="btn secondary-btn mark-reservation-done" data-index="${index}" ${appointment.status === "hecha" ? "disabled" : ""}>
+          Marcar como hecha
+        </button>
       </article>
     `
     )
     .join("");
+}
+
+function markAppointmentDone(index) {
+  const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  if (!appointments[index]) {
+    return;
+  }
+
+  appointments[index].status = "hecha";
+  localStorage.setItem("appointments", JSON.stringify(appointments));
+  renderAdminReservations();
+  updateTimeSlotState();
 }
 
 function showAdminContent(show) {
@@ -135,6 +207,7 @@ function handleAdminLogin(event) {
     adminMessage.textContent = "Acceso concedido.";
     adminMessage.style.color = "#bada55";
     adminLoginForm.reset();
+    updateTimeSlotState();
     return;
   }
 
@@ -152,9 +225,40 @@ if (adminLoginForm) {
   adminLoginForm.addEventListener("submit", handleAdminLogin);
 }
 
+const clearOldReservationsBtn = document.getElementById("clearOldReservations");
+const refreshStatusBtn = document.getElementById("refreshStatus");
+
+if (adminReservations) {
+  adminReservations.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target.classList.contains("mark-reservation-done")) {
+      const index = Number(target.dataset.index);
+      if (!Number.isNaN(index)) {
+        markAppointmentDone(index);
+      }
+    }
+  });
+}
+
 if (clearReservationsBtn) {
   clearReservationsBtn.addEventListener("click", () => {
     localStorage.removeItem("appointments");
+    renderAdminReservations();
+    updateTimeSlotState();
+  });
+}
+
+if (clearOldReservationsBtn) {
+  clearOldReservationsBtn.addEventListener("click", () => {
+    cleanupOldAppointments();
+    renderAdminReservations();
+    updateTimeSlotState();
+  });
+}
+
+if (refreshStatusBtn) {
+  refreshStatusBtn.addEventListener("click", () => {
+    updateAppointmentStatuses();
     renderAdminReservations();
     updateTimeSlotState();
   });
@@ -173,6 +277,8 @@ if (form.barber) {
 }
 
 setDateMin();
+cleanupOldAppointments();
+updateAppointmentStatuses();
 showAdminContent(false);
 updateTimeSlotState();
 
