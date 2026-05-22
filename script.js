@@ -288,6 +288,39 @@ timeSlots.forEach((button) => {
   });
 });
 
+// Slot navigation for mobile (prev/next buttons)
+const slotPrev = document.getElementById("slotPrev");
+const slotNext = document.getElementById("slotNext");
+const slotsContainer = document.getElementById("timeSlots");
+
+function updateSlotNav() {
+  if (!slotsContainer) return;
+  if (slotPrev) slotPrev.disabled = slotsContainer.scrollLeft <= 0;
+  if (slotNext) slotNext.disabled = slotsContainer.scrollLeft + slotsContainer.clientWidth >= slotsContainer.scrollWidth - 1;
+}
+
+if (slotPrev && slotsContainer) {
+  slotPrev.addEventListener("click", () => {
+    const amount = Math.round(slotsContainer.clientWidth * 0.6) || 120;
+    slotsContainer.scrollBy({ left: -amount, behavior: "smooth" });
+    setTimeout(updateSlotNav, 250);
+  });
+}
+
+if (slotNext && slotsContainer) {
+  slotNext.addEventListener("click", () => {
+    const amount = Math.round(slotsContainer.clientWidth * 0.6) || 120;
+    slotsContainer.scrollBy({ left: amount, behavior: "smooth" });
+    setTimeout(updateSlotNav, 250);
+  });
+}
+
+if (slotsContainer) {
+  slotsContainer.addEventListener("scroll", updateSlotNav);
+  window.addEventListener("resize", updateSlotNav);
+  updateSlotNav();
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
